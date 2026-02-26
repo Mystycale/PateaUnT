@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patea un Therian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google AdSense global site tag -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7539874541236460"
+        crossorigin="anonymous"></script> <!-- replace pub id only if necessary -->
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg-secondary: #12121a;
+            --fg: #e8e8e8;
+            --muted: #6b6b7a;
+            --accent: #ff3d3d;
+            --accent-glow: #ff6b6b;
+            --gold: #ffd700;
+            --gold-dark: #b8960b;
+            --card: #1a1a24;
+            --border: #2a2a3a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body.login-active {
+            cursor: auto;
+        }
+
+        .font-display {
+            font-family: 'Bangers', cursive;
+            letter-spacing: 2px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .login-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .login-container {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-title {
+            font-family: 'Bangers', cursive;
+            font-size: 42px;
+            color: var(--gold);
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin-bottom: 10px;
+            line-height: 1.1;
+        }
+
+        .login-subtitle {
+            color: var(--muted);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--fg);
+            font-size: 18px;
+            font-family: 'Rajdhani', sans-serif;
+            outline: none;
+            transition: border-color 0.3s ease;
+            text-align: center;
+        }
+
+        .login-input:focus {
+            border-color: var(--gold);
+        }
+
+        .login-input::placeholder {
+            color: var(--muted);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            color: var(--bg);
+            font-family: 'Bangers', cursive;
+            font-size: 24px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            letter-spacing: 2px;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-error {
+            color: var(--accent);
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease;
+        }
+
+        .custom-cursor.hitting {
+            transform: translate(-50%, -50%) rotate(-30deg) scale(1.3);
+        }
+
+        /* Background */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(255, 61, 61, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.01) 50px, rgba(255,255,255,0.01) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.01) 50px, rgba(255,255,255,0.01) 51px);
+            z-index: 0;
+        }
+
+        .particles-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.2; }
+        }
+
+        .target-area {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+        }
+
+        .creature {
+            position: relative;
+            width: 320px;
+            height: 480px;
+            transition: transform 0.1s ease;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+        }
+
+        .creature.hit {
+            animation: shake 0.15s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-15px) rotate(-3deg); }
+            75% { transform: translateX(15px) rotate(3deg); }
+        }
+
+        .hit-effect {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+            animation: hitPop 0.5s ease forwards;
+        }
+
+        @keyframes hitPop {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+        }
+
+        .hit-number {
+            position: absolute;
+            font-family: 'Bangers', cursive;
+            font-size: 48px;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold), 0 4px 0 var(--gold-dark), 0 0 30px rgba(255, 215, 0, 0.5);
+            pointer-events: none;
+            animation: numberPop 0.8s ease forwards;
+            z-index: 200;
+        }
+
+        @keyframes numberPop {
+            0% { transform: scale(0.5) translateY(0); opacity: 1; }
+            50% { transform: scale(1.3) translateY(-30px); opacity: 1; }
+            100% { transform: scale(1) translateY(-80px); opacity: 0; }
+        }
+
+        .multiplier-event {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Bangers', cursive;
+            font-size: 120px;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent), 0 0 60px var(--accent-glow);
+            z-index: 500;
+            animation: multiplierPop 1.5s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes multiplierPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+            80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, transparent 100%);
+            padding: 20px 40px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .counter-display {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .counter-value {
+            font-family: 'Bangers', cursive;
+            font-size: 42px;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .player-info {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-name {
+            font-family: 'Bangers', cursive;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .audio-btn {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--fg);
+        }
+
+        .audio-btn:hover {
+            border-color: var(--gold);
+        }
+
+        .audio-btn.muted {
+            border-color: var(--accent);
+            opacity: 0.6;
+        }
+
+        .audio-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Shop Panel */
+        .shop-panel {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-right: none;
+            border-radius: 16px 0 0 16px;
+            padding: 20px;
+            z-index: 100;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 300px;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .shop-panel.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .shop-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .shop-item:hover:not(.owned):not(.locked) {
+            border-color: var(--gold);
+            transform: translateX(-5px);
+        }
+
+        .shop-item.owned {
+            border-color: var(--accent);
+            background: rgba(255, 61, 61, 0.1);
+        }
+
+        .shop-item.equipped {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .shop-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .item-icon {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+        }
+
+        /* Leaderboard Panel */
+        .leaderboard-panel {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-left: none;
+            border-radius: 0 16px 16px 0;
+            padding: 20px;
+            z-index: 100;
+            max-height: 80vh;
+            width: 320px;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        }
+
+        .leaderboard-panel.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-50%) translateX(-20px);
+        }
+
+        .leaderboard-title {
+            font-family: 'Bangers', cursive;
+            font-size: 24px;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .leaderboard-list {
+            max-height: calc(80vh - 100px);
+            overflow-y: auto;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: var(--bg);
+        }
+
+        .leaderboard-item.current-player {
+            border: 2px solid var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .leaderboard-rank {
+            font-family: 'Bangers', cursive;
+            font-size: 24px;
+            width: 35px;
+            text-align: center;
+        }
+
+        .leaderboard-rank.gold { color: #ffd700; }
+        .leaderboard-rank.silver { color: #c0c0c0; }
+        .leaderboard-rank.bronze { color: #cd7f32; }
+        .leaderboard-rank.normal { color: var(--muted); }
+
+        .leaderboard-name {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .leaderboard-score {
+            font-family: 'Bangers', cursive;
+            font-size: 18px;
+            color: var(--gold);
+        }
+
+        .no-scores {
+            text-align: center;
+            color: var(--muted);
+            padding: 40px 20px;
+        }
+
+        /* Current Weapon */
+        .current-weapon {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        /* Event Banner */
+        .event-banner {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            padding: 12px 32px;
+            border-radius: 30px;
+            font-family: 'Bangers', cursive;
+            font-size: 24px;
+            z-index: 200;
+            animation: bannerPulse 0.5s ease infinite alternate;
+            box-shadow: 0 0 40px rgba(255, 61, 61, 0.5);
+        }
+
+        @keyframes bannerPulse {
+            from { transform: translateX(-50%) scale(1); }
+            to { transform: translateX(-50%) scale(1.05); }
+        }
+
+        /* Toggle Buttons */
+        .panel-toggle {
+            position: fixed;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            z-index: 150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .panel-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .panel-toggle.active {
+            background: linear-gradient(135deg, var(--accent) 0%, #ff6b6b 100%);
+            box-shadow: 0 4px 20px rgba(255, 61, 61, 0.4);
+        }
+
+        .panel-toggle svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--bg);
+        }
+
+        #shopToggle {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        #leaderboardToggle {
+            left: 20px;
+            bottom: 100px;
+        }
+
+        .screen-shake {
+            animation: screenShake 0.2s ease;
+        }
+
+        @keyframes screenShake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-5px, 3px); }
+            40% { transform: translate(5px, -3px); }
+            60% { transform: translate(-3px, 5px); }
+            80% { transform: translate(3px, -5px); }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--muted);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .status-bar {
+                padding: 10px 15px;
+                justify-content: center;
+            }
+
+            .counter-value {
+                font-size: 32px;
+                min-width: 80px;
+            }
+
+            .target-area {
+                width: 300px;
+                height: 400px;
+            }
+
+            .creature {
+                width: 260px;
+                height: 380px;
+            }
+
+            .shop-panel, .leaderboard-panel {
+                width: 100%;
+                max-width: 100%;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transform: none;
+                border-radius: 16px 16px 0 0;
+                max-height: 50vh;
+            }
+
+            .leaderboard-panel.hidden {
+                transform: translateY(20px);
+            }
+
+            .current-weapon {
+                bottom: auto;
+                top: 140px;
+            }
+
+            #shopToggle {
+                bottom: 80px;
+            }
+
+            #leaderboardToggle {
+                bottom: 80px;
+                left: auto;
+                right: 90px;
+            }
+
+            .custom-cursor {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            .hit-number {
+                font-size: 36px;
+            }
+
+            .player-info {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body class="login-active">
+    <!-- Google AdSense ad unit placeholder -->
+    <div class="w-full flex justify-center mt-4">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-7539874541236460"
+             data-ad-slot="4958599311"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <h1 class="login-title">PATEA UN THERIAN</h1>
+            <p class="login-subtitle">Ingresa tu nombre de usuario para comenzar</p>
+            <input type="text" class="login-input" id="usernameInput" placeholder="Tu nombre de usuario" maxlength="20" autocomplete="off">
+            <p class="login-error" id="loginError"></p>
+            <button class="login-btn" id="loginBtn">JUGAR</button>
+        </div>
+    </div>
+
+    <div class="bg-pattern"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="cursor">
+        <svg viewBox="0 0 60 60" fill="none">
+            <path d="M20 5 L40 5 L42 15 L45 50 L15 50 L18 15 Z" fill="#2a2a3a" stroke="#1a1a24" stroke-width="2"/>
+            <path d="M22 8 L38 8 L40 16 L42 45 L18 45 L20 16 Z" fill="#4a4a5a"/>
+            <path d="M15 45 L45 45 L45 55 L15 55 Z" fill="#1a1a24"/>
+        </svg>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="player-info">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="player-name" id="playerNameDisplay">Jugador</span>
+        </div>
+        <div class="counter-display">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span class="text-muted text-sm">GOLPES</span>
+            <span class="counter-value" id="hitCounter">0</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-sm text-muted">Por hit:</div>
+            <div class="font-display text-2xl text-white" id="multiplierDisplay">x1</div>
+        </div>
+        <div class="audio-controls">
+            <button class="audio-btn" id="musicToggle" title="Musica">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="16" r="3"/>
+                </svg>
+                <span class="text-xs">Musica</span>
+            </button>
+            <button class="audio-btn" id="sfxToggle" title="Efectos">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </svg>
+                <span class="text-xs">SFX</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Event Banner -->
+    <div class="event-banner" id="eventBanner" style="display: none;"></div>
+
+    <!-- Main Game Area -->
+    <main class="min-h-screen flex items-center justify-center pt-24 pb-20">
+        <div class="target-area" id="targetArea">
+            <svg class="creature" id="creature" viewBox="0 0 320 480" fill="none">
+                <!-- Wolf Tail -->
+                <path d="M245 340 Q310 350 290 420 Q270 470 230 440 Q210 420 220 380" stroke="#5a5a6a" stroke-width="30" fill="none" stroke-linecap="round"/>
+                <path d="M248 338 Q300 350 285 415 Q268 455 235 435 Q218 418 225 385" stroke="#7a7a8a" stroke-width="20" fill="none" stroke-linecap="round"/>
+                <path d="M235 435 Q220 460 230 440" stroke="#4a4a5a" stroke-width="22" fill="none" stroke-linecap="round"/>
+                <!-- Belt -->
+                <rect x="95" y="310" width="130" height="12" rx="2" fill="#2a2a2a"/>
+                <rect x="150" y="308" width="20" height="16" rx="2" fill="#888"/>
+                <!-- Legs -->
+                <path d="M100 315 L90 440 L130 440 L135 315 Z" fill="#3a5578"/>
+                <path d="M185 315 L190 440 L230 440 L220 315 Z" fill="#3a5578"/>
+                <line x1="110" y1="350" x2="115" y2="440" stroke="#2a4560" stroke-width="2"/>
+                <line x1="200" y1="350" x2="205" y2="440" stroke="#2a4560" stroke-width="2"/>
+                <!-- Shoes -->
+                <ellipse cx="110" cy="455" rx="30" ry="18" fill="#1a1a1a"/>
+                <ellipse cx="210" cy="455" rx="30" ry="18" fill="#1a1a1a"/>
+                <!-- Body - Hoodie -->
+                <path d="M80 180 Q70 200 75 320 L245 320 Q250 200 240 180 Q200 160 160 160 Q120 160 80 180" fill="#2d2d3a"/>
+                <path d="M80 180 Q70 200 75 320 L245 320 Q250 200 240 180" fill="#3d3d4a"/>
+                <!-- Hood -->
+                <path d="M90 180 Q100 120 160 110 Q220 120 230 180" fill="#252530"/>
+                <path d="M95 178 Q105 125 160 115 Q215 125 225 178" fill="#2d2d3a"/>
+                <!-- Pocket -->
+                <path d="M110 260 L110 300 Q160 310 210 300 L210 260 Q160 250 110 260" fill="#252530" stroke="#3d3d4a" stroke-width="2"/>
+                <line x1="160" y1="265" x2="160" y2="305" stroke="#3d3d4a" stroke-width="2"/>
+                <!-- Strings -->
+                <line x1="140" y1="175" x2="135" y2="220" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
+                <line x1="180" y1="175" x2="185" y2="220" stroke="#aaa" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="135" cy="222" r="5" fill="#888"/>
+                <circle cx="185" cy="222" r="5" fill="#888"/>
+                <!-- Arms -->
+                <path d="M75 185 Q50 220 55 280 Q58 320 70 340 L85 335 Q80 310 78 280 Q75 240 90 200" fill="#3d3d4a"/>
+                <path d="M245 185 Q270 220 265 280 Q262 320 250 340 L235 335 Q240 310 242 280 Q245 240 230 200" fill="#3d3d4a"/>
+                <!-- Hands -->
+                <ellipse cx="72" cy="350" rx="18" ry="22" fill="#2a2a2a"/>
+                <ellipse cx="248" cy="350" rx="18" ry="22" fill="#2a2a2a"/>
+                <!-- Neck -->
+                <rect x="140" y="160" width="40" height="25" fill="#e8c4a0"/>
+                <!-- Head -->
+                <ellipse cx="160" cy="120" rx="55" ry="60" fill="#e8c4a0"/>
+                <!-- Hair -->
+                <path d="M105 100 Q100 70 115 55 Q130 45 140 60" fill="#4a3728"/>
+                <path d="M215 100 Q220 70 205 55 Q190 45 180 60" fill="#4a3728"/>
+                <ellipse cx="160" cy="75" rx="45" ry="25" fill="#4a3728"/>
+                <!-- Wolf Mask -->
+                <path d="M105 85 Q100 50 130 35 Q160 25 190 35 Q220 50 215 85 Q200 110 160 115 Q120 110 105 85" fill="#6a6a7a"/>
+                <path d="M110 80 Q105 55 135 40 Q160 32 185 40 Q215 55 210 80" fill="#7a7a8a"/>
+                <path d="M145 50 L160 40 L175 50" stroke="#5a5a6a" stroke-width="3" fill="none"/>
+                <!-- Mask ears -->
+                <path d="M108 70 L85 25 L125 55 Z" fill="#6a6a7a"/>
+                <path d="M212 70 L235 25 L195 55 Z" fill="#6a6a7a"/>
+                <path d="M110 65 L92 35 L120 55 Z" fill="#8a6a7a"/>
+                <path d="M210 65 L228 35 L200 55 Z" fill="#8a6a7a"/>
+                <!-- Eye holes -->
+                <ellipse cx="135" cy="80" rx="18" ry="15" fill="#1a1a24"/>
+                <ellipse cx="185" cy="80" rx="18" ry="15" fill="#1a1a24"/>
+                <!-- Eyes -->
+                <ellipse cx="135" cy="82" rx="12" ry="10" fill="white"/>
+                <ellipse cx="185" cy="82" rx="12" ry="10" fill="white"/>
+                <circle cx="137" cy="83" r="6" fill="#4a7090"/>
+                <circle cx="187" cy="83" r="6" fill="#4a7090"/>
+                <circle cx="139" cy="81" r="2.5" fill="white"/>
+                <circle cx="189" cy="81" r="2.5" fill="white"/>
+                <!-- Nose bridge -->
+                <path d="M155 95 L160 105 L165 95" fill="#5a5a6a"/>
+                <path d="M105 95 Q130 115 160 118 Q190 115 215 95" stroke="#5a5a6a" stroke-width="3" fill="none"/>
+                <!-- Face below mask -->
+                <ellipse cx="160" cy="130" rx="8" ry="6" fill="#d4a480"/>
+                <path d="M145 145 Q160 155 175 145" stroke="#c08070" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <ellipse cx="130" cy="140" rx="12" ry="8" fill="#f0c4a0" opacity="0.5"/>
+                <ellipse cx="190" cy="140" rx="12" ry="8" fill="#f0c4a0" opacity="0.5"/>
+            </svg>
+        </div>
+    </main>
+
+    <!-- Current Weapon -->
+    <div class="current-weapon">
+        <div id="currentWeaponIcon"></div>
+        <div>
+            <div class="text-xs text-muted">ARMA ACTUAL</div>
+            <div class="font-display text-lg" id="currentWeaponName">Bota</div>
+        </div>
+        <div class="font-display text-xl" style="color: var(--gold);" id="currentWeaponMultiplier">x1</div>
+    </div>
+
+    <!-- Shop Panel -->
+    <div class="shop-panel" id="shopPanel">
+        <h3 class="font-display text-xl mb-4 text-center" style="color: var(--gold);">TIENDA</h3>
+        <div id="shopItems"></div>
+    </div>
+
+    <!-- Leaderboard Panel -->
+    <div class="leaderboard-panel hidden" id="leaderboardPanel">
+        <h3 class="leaderboard-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            TOP JUGADORES
+        </h3>
+        <div class="leaderboard-list" id="leaderboardList">
+            <div class="no-scores">No hay puntuaciones aun</div>
+        </div>
+    </div>
+
+    <!-- Toggle Buttons -->
+    <button class="panel-toggle" id="shopToggle" aria-label="Tienda">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6h-2V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm10 16H5V8h14v12z"/>
+        </svg>
+    </button>
+
+    <button class="panel-toggle" id="leaderboardToggle" aria-label="Ranking">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+    </button>
+
+    <script>
+        // ============ STORAGE MANAGER ============
+        const StorageManager = {
+            KEY: 'pateaUnTherianData',
+
+            getData() {
+                try {
+                    const data = localStorage.getItem(this.KEY);
+                    return data ? JSON.parse(data) : { players: [] };
+                } catch (e) {
+                    return { players: [] };
+                }
+            },
+
+            saveData(data) {
+                try {
+                    localStorage.setItem(this.KEY, JSON.stringify(data));
+                } catch (e) {
+                    console.error('Error saving data:', e);
+                }
+            },
+
+            getPlayer(id) {
+                const data = this.getData();
+                return data.players.find(p => p.id === id);
+            },
+
+            updatePlayerScore(id, score) {
+                const data = this.getData();
+                const playerIndex = data.players.findIndex(p => p.id === id);
+                if (playerIndex !== -1) {
+                    data.players[playerIndex].score = score;
+                    data.players[playerIndex].lastPlayed = Date.now();
+                }
+                this.saveData(data);
+            },
+
+            addPlayer(id, name) {
+                const data = this.getData();
+                data.players.push({
+                    id: id,
+                    name: name,
+                    score: 0,
+                    weapons: ['boot'],
+                    currentWeapon: 'boot',
+                    createdAt: Date.now(),
+                    lastPlayed: Date.now()
+                });
+                this.saveData(data);
+                return data.players[data.players.length - 1];
+            },
+
+            updatePlayerWeapons(id, weapons, currentWeapon) {
+                const data = this.getData();
+                const playerIndex = data.players.findIndex(p => p.id === id);
+                if (playerIndex !== -1) {
+                    data.players[playerIndex].weapons = weapons;
+                    data.players[playerIndex].currentWeapon = currentWeapon;
+                }
+                this.saveData(data);
+            },
+
+            getTopPlayers(limit = 10) {
+                const data = this.getData();
+                return data.players
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, limit);
+            }
+        };
+
+        // ============ AUDIO SYSTEM ============
+        class AudioManager {
+            constructor() {
+                this.ctx = null;
+                this.musicMuted = false;
+                this.sfxMuted = false;
+                this.musicGain = null;
+                this.initialized = false;
+            }
+
+            init() {
+                if (this.initialized) return;
+                try {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    this.musicGain = this.ctx.createGain();
+                    this.musicGain.gain.value = 0.15;
+                    this.musicGain.connect(this.ctx.destination);
+                    this.initialized = true;
+                    this.startMusic();
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+            }
+
+            startMusic() {
+                if (!this.ctx || this.musicMuted) return;
+                
+                const playNote = (freq, startTime, duration, type = 'sine') => {
+                    if (!this.ctx) return;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, startTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.musicGain);
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                };
+
+                const bassLine = [110, 130.81, 146.83, 130.81, 110, 98, 110, 130.81];
+                const melody = [220, 261.63, 293.66, 329.63, 293.66, 261.63, 220, 196];
+                const beatDuration = 0.25;
+                const loopDuration = bassLine.length * beatDuration;
+
+                const playLoop = () => {
+                    if (!this.ctx || this.musicMuted) return;
+                    const now = this.ctx.currentTime;
+                    bassLine.forEach((freq, i) => playNote(freq, now + i * beatDuration, beatDuration * 0.8, 'triangle'));
+                    melody.forEach((freq, i) => playNote(freq, now + i * beatDuration, beatDuration * 0.6, 'sine'));
+                    setTimeout(playLoop, loopDuration * 1000);
+                };
+
+                playLoop();
+            }
+
+            toggleMusic() {
+                this.musicMuted = !this.musicMuted;
+                if (this.musicGain) {
+                    this.musicGain.gain.value = this.musicMuted ? 0 : 0.15;
+                }
+                return this.musicMuted;
+            }
+
+            toggleSFX() {
+                this.sfxMuted = !this.sfxMuted;
+                return this.sfxMuted;
+            }
+
+            playHitSound(weaponId) {
+                if (!this.ctx || this.sfxMuted) return;
+                const now = this.ctx.currentTime;
+                const sounds = {
+                    boot: () => this.playPunch(now),
+                    bat: () => this.playWoodHit(now),
+                    hammer: () => this.playMetalHit(now),
+                    guitar: () => this.playGuitarSmash(now),
+                    anvil: () => this.playHeavyMetal(now),
+                    meteor: () => this.playExplosion(now),
+                    chair: () => this.playChairHit(now),
+                    piano: () => this.playPianoCrash(now),
+                    truck: () => this.playTruckHit(now),
+                    planet: () => this.playCosmicHit(now),
+                    blackhole: () => this.playBlackHole(now),
+                    bigbang: () => this.playBigBang(now)
+                };
+                (sounds[weaponId] || sounds.boot)();
+            }
+
+            playPunch(time) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, time);
+                osc.frequency.exponentialRampToValueAtTime(50, time + 0.1);
+                gain.gain.setValueAtTime(0.5, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(time);
+                osc.stop(time + 0.15);
+            }
+
+            playWoodHit(time) {
+                if (!this.ctx) return;
+                const noise = this.ctx.createBufferSource();
+                const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.2, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.02));
+                noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 400;
+                filter.Q.value = 2;
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.4;
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(time);
+            }
+
+            playMetalHit(time) {
+                if (!this.ctx) return;
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc1.type = 'square';
+                osc1.frequency.value = 800;
+                osc2.type = 'sawtooth';
+                osc2.frequency.value = 1200;
+                gain.gain.setValueAtTime(0.2, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc1.start(time);
+                osc1.stop(time + 0.3);
+                osc2.start(time);
+                osc2.stop(time + 0.3);
+            }
+
+            playGuitarSmash(time) {
+                if (!this.ctx) return;
+                [82.41, 110, 146.83, 196, 246.94, 329.63].forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = freq * 2;
+                    gain.gain.setValueAtTime(0.15, time + i * 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(time + i * 0.01);
+                    osc.stop(time + 0.5);
+                });
+            }
+
+            playHeavyMetal(time) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(60, time);
+                osc.frequency.exponentialRampToValueAtTime(30, time + 0.5);
+                gain.gain.setValueAtTime(0.6, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.6);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(time);
+                osc.stop(time + 0.6);
+            }
+
+            playExplosion(time) {
+                if (!this.ctx) return;
+                const noise = this.ctx.createBufferSource();
+                const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.8, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.15));
+                noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1000, time);
+                filter.frequency.exponentialRampToValueAtTime(100, time + 0.8);
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.5;
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(time);
+            }
+
+            playChairHit(time) {
+                if (!this.ctx) return;
+                const noise = this.ctx.createBufferSource();
+                const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.15, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.01));
+                noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 600;
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.35;
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(time);
+            }
+
+            playPianoCrash(time) {
+                if (!this.ctx) return;
+                [130.81, 164.81, 196, 261.63, 329.63, 392].forEach((freq) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, time);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + 1.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(time);
+                    osc.stop(time + 1.2);
+                });
+            }
+
+            playTruckHit(time) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(40, time);
+                osc.frequency.exponentialRampToValueAtTime(20, time + 0.8);
+                gain.gain.setValueAtTime(0.7, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.8);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(time);
+                osc.stop(time + 0.8);
+            }
+
+            playCosmicHit(time) {
+                if (!this.ctx) return;
+                for (let i = 0; i < 5; i++) {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = 200 + i * 150;
+                    gain.gain.setValueAtTime(0.15, time + i * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.01, time + 1.5);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(time + i * 0.05);
+                    osc.stop(time + 1.5);
+                }
+            }
+
+            playBlackHole(time) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, time);
+                osc.frequency.exponentialRampToValueAtTime(20, time + 1.5);
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(500, time);
+                filter.frequency.exponentialRampToValueAtTime(50, time + 1.5);
+                gain.gain.setValueAtTime(0.5, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 1.5);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(time);
+                osc.stop(time + 1.5);
+            }
+
+            playBigBang(time) {
+                if (!this.ctx) return;
+                const noise = this.ctx.createBufferSource();
+                const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 2, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.3));
+                noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2000, time);
+                filter.frequency.exponentialRampToValueAtTime(50, time + 2);
+                const gain = this.ctx.createGain();
+                gain.gain.value = 0.6;
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(time);
+                for (let i = 0; i < 8; i++) {
+                    const osc = this.ctx.createOscillator();
+                    const oscGain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = 100 + i * 100;
+                    oscGain.gain.setValueAtTime(0.1, time + i * 0.1);
+                    oscGain.gain.exponentialRampToValueAtTime(0.01, time + 2);
+                    osc.connect(oscGain);
+                    oscGain.connect(this.ctx.destination);
+                    osc.start(time + i * 0.1);
+                    osc.stop(time + 2);
+                }
+            }
+
+            playPurchase() {
+                if (!this.ctx || this.sfxMuted) return;
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99].forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.3);
+                });
+            }
+
+            playEvent() {
+                if (!this.ctx || this.sfxMuted) return;
+                const now = this.ctx.currentTime;
+                [329.63, 392, 493.88, 587.33, 783.99].forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.15, now + i * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + i * 0.08 + 0.2);
+                });
+            }
+        }
+
+        const audioManager = new AudioManager();
+
+        // ============ GAME STATE ============
+        let currentPlayer = null;
+        let totalHits = 0;
+        let eventMultiplier = 1;
+        let currentWeapon = { id: 'boot', name: 'Bota', multiplier: 1, icon: 'boot' };
+
+        const weapons = [
+            { id: 'boot', name: 'Bota', multiplier: 1, cost: 0, icon: 'boot' },
+            { id: 'bat', name: 'Bate', multiplier: 2, cost: 50, icon: 'bat' },
+            { id: 'hammer', name: 'Martillo', multiplier: 3, cost: 150, icon: 'hammer' },
+            { id: 'guitar', name: 'Guitarra', multiplier: 5, cost: 400, icon: 'guitar' },
+            { id: 'anvil', name: 'Yunque', multiplier: 8, cost: 1000, icon: 'anvil' },
+            { id: 'meteor', name: 'Meteoro', multiplier: 15, cost: 3000, icon: 'meteor' },
+            { id: 'chair', name: 'Silla', multiplier: 25, cost: 7000, icon: 'chair' },
+            { id: 'piano', name: 'Piano', multiplier: 50, cost: 20000, icon: 'piano' },
+            { id: 'truck', name: 'Camion', multiplier: 100, cost: 60000, icon: 'truck' },
+            { id: 'planet', name: 'Planeta', multiplier: 200, cost: 150000, icon: 'planet' },
+            { id: 'blackhole', name: 'Agujero Negro', multiplier: 500, cost: 500000, icon: 'blackhole' },
+            { id: 'bigbang', name: 'Big Bang', multiplier: 1000, cost: 2000000, icon: 'bigbang' }
+        ];
+
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const usernameInput = document.getElementById('usernameInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const playerNameDisplay = document.getElementById('playerNameDisplay');
+        const cursor = document.getElementById('cursor');
+        const creature = document.getElementById('creature');
+        const targetArea = document.getElementById('targetArea');
+        const hitCounter = document.getElementById('hitCounter');
+        const multiplierDisplay = document.getElementById('multiplierDisplay');
+        const eventBanner = document.getElementById('eventBanner');
+        const shopPanel = document.getElementById('shopPanel');
+        const shopItems = document.getElementById('shopItems');
+        const shopToggle = document.getElementById('shopToggle');
+        const leaderboardPanel = document.getElementById('leaderboardPanel');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const leaderboardToggle = document.getElementById('leaderboardToggle');
+        const currentWeaponName = document.getElementById('currentWeaponName');
+        const currentWeaponMultiplier = document.getElementById('currentWeaponMultiplier');
+        const musicToggle = document.getElementById('musicToggle');
+        const sfxToggle = document.getElementById('sfxToggle');
+
+        // ============ LOGIN SYSTEM ============
+        function generateUID() {
+            return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function handleLogin() {
+            const username = usernameInput.value.trim();
+            
+            if (!username) {
+                loginError.textContent = 'Por favor ingresa un nombre de usuario';
+                return;
+            }
+
+            if (username.length < 2) {
+                loginError.textContent = 'El nombre debe tener al menos 2 caracteres';
+                return;
+            }
+
+            const playerId = generateUID();
+            currentPlayer = StorageManager.addPlayer(playerId, username);
+            
+            totalHits = currentPlayer.score;
+            loadPlayerWeapons();
+            
+            playerNameDisplay.textContent = username;
+            updateHitCounter();
+            
+            loginScreen.classList.add('hidden');
+            document.body.classList.remove('login-active');
+            
+            audioManager.init();
+            renderShop();
+            updateWeaponDisplay();
+            updateCursorIcon();
+        }
+
+        function loadPlayerWeapons() {
+            if (!currentPlayer) return;
+            
+            const savedWeapons = currentPlayer.weapons || ['boot'];
+            const savedCurrentWeapon = currentPlayer.currentWeapon || 'boot';
+            
+            weapons.forEach(w => {
+                w.owned = savedWeapons.includes(w.id);
+            });
+            
+            const weapon = weapons.find(w => w.id === savedCurrentWeapon);
+            if (weapon && weapon.owned) {
+                currentWeapon = weapon;
+            }
+        }
+
+        loginBtn.addEventListener('click', handleLogin);
+        usernameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        // ============ PARTICLES ============
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                const colors = ['#ff3d3d', '#ffd700', '#6a6a7a', '#00ff88'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(particle);
+            }
+        }
+
+        // ============ CURSOR ============
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function updateCursorIcon() {
+            const cursorSvg = cursor.querySelector('svg');
+            const icons = {
+                bat: `<rect x="25" y="5" width="10" height="50" fill="#8B4513" rx="2"/><rect x="20" y="45" width="20" height="15" fill="#A0522D" rx="3"/>`,
+                hammer: `<rect x="27" y="5" width="6" height="45" fill="#8B4513" rx="1"/><rect x="10" y="40" width="40" height="18" fill="#708090" rx="2"/>`,
+                guitar: `<ellipse cx="30" cy="45" rx="18" ry="15" fill="#CD853F"/><ellipse cx="30" cy="45" rx="12" ry="10" fill="#DEB887"/><circle cx="30" cy="45" r="4" fill="#2a2a3a"/><rect x="27" y="5" width="6" height="35" fill="#8B4513"/>`,
+                anvil: `<path d="M10 35 L50 35 L55 45 L5 45 Z" fill="#4a4a5a"/><path d="M15 25 L45 25 L50 35 L10 35 Z" fill="#5a5a6a"/>`,
+                meteor: `<circle cx="30" cy="30" r="20" fill="#ff3d3d"/><circle cx="25" cy="25" r="5" fill="#ffaa00" opacity="0.8"/>`,
+                chair: `<rect x="20" y="10" width="20" height="8" fill="#8B4513" rx="1"/><rect x="22" y="18" width="4" height="35" fill="#A0522D"/><rect x="34" y="18" width="4" height="35" fill="#A0522D"/><rect x="18" y="35" width="24" height="12" fill="#8B4513" rx="2"/>`,
+                piano: `<rect x="5" y="25" width="50" height="30" fill="#1a1a1a" rx="2"/><rect x="8" y="28" width="8" height="20" fill="#fff"/><rect x="18" y="28" width="8" height="20" fill="#fff"/><rect x="28" y="28" width="8" height="20" fill="#fff"/><rect x="38" y="28" width="8" height="20" fill="#fff"/>`,
+                truck: `<rect x="5" y="30" width="50" height="25" fill="#cc3333" rx="2"/><rect x="35" y="15" width="20" height="25" fill="#cc3333" rx="2"/><circle cx="15" cy="55" r="6" fill="#333"/><circle cx="45" cy="55" r="6" fill="#333"/>`,
+                planet: `<circle cx="30" cy="30" r="22" fill="#4169E1"/><ellipse cx="30" cy="30" rx="30" ry="8" fill="none" stroke="#ffd700" stroke-width="3" transform="rotate(-20 30 30)"/>`,
+                blackhole: `<circle cx="30" cy="30" r="25" fill="#0a0a0f"/><circle cx="30" cy="30" r="18" fill="#1a0a2a"/><circle cx="30" cy="30" r="10" fill="#2a0a4a"/>`,
+                bigbang: `<circle cx="30" cy="30" r="20" fill="#fff"/><circle cx="30" cy="30" r="15" fill="#ffaa00"/><circle cx="30" cy="30" r="10" fill="#ff6600"/>`,
+                boot: `<path d="M20 5 L40 5 L42 15 L45 50 L15 50 L18 15 Z" fill="#2a2a3a" stroke="#1a1a24" stroke-width="2"/><path d="M22 8 L38 8 L40 16 L42 45 L18 45 L20 16 Z" fill="#4a4a5a"/><path d="M15 45 L45 45 L45 55 L15 55 Z" fill="#1a1a24"/>`
+            };
+            cursorSvg.innerHTML = icons[currentWeapon.icon] || icons.boot;
+        }
+
+        function getWeaponIcon(iconName) {
+            const icons = {
+                bat: `<svg viewBox="0 0 50 50" class="item-icon"><rect x="20" y="5" width="10" height="40" fill="#8B4513" rx="2"/><rect x="15" y="35" width="20" height="12" fill="#A0522D" rx="3"/></svg>`,
+                hammer: `<svg viewBox="0 0 50 50" class="item-icon"><rect x="22" y="5" width="6" height="35" fill="#8B4513" rx="1"/><rect x="5" y="30" width="40" height="15" fill="#708090" rx="2"/></svg>`,
+                guitar: `<svg viewBox="0 0 50 50" class="item-icon"><ellipse cx="25" cy="35" rx="15" ry="12" fill="#CD853F"/><rect x="22" y="5" width="6" height="25" fill="#8B4513"/></svg>`,
+                anvil: `<svg viewBox="0 0 50 50" class="item-icon"><path d="M5 25 L45 25 L48 35 L2 35 Z" fill="#5a5a6a"/><path d="M10 15 L40 15 L45 25 L5 25 Z" fill="#6a6a7a"/></svg>`,
+                meteor: `<svg viewBox="0 0 50 50" class="item-icon"><circle cx="25" cy="25" r="18" fill="#ff3d3d"/><circle cx="20" cy="20" r="5" fill="#ffaa00" opacity="0.8"/></svg>`,
+                chair: `<svg viewBox="0 0 50 50" class="item-icon"><rect x="15" y="5" width="20" height="8" fill="#8B4513" rx="1"/><rect x="17" y="13" width="4" height="25" fill="#A0522D"/><rect x="29" y="13" width="4" height="25" fill="#A0522D"/><rect x="13" y="25" width="24" height="10" fill="#8B4513" rx="2"/></svg>`,
+                piano: `<svg viewBox="0 0 50 50" class="item-icon"><rect x="5" y="15" width="40" height="25" fill="#1a1a1a" rx="2"/><rect x="8" y="18" width="6" height="15" fill="#fff"/><rect x="16" y="18" width="6" height="15" fill="#fff"/><rect x="24" y="18" width="6" height="15" fill="#fff"/><rect x="32" y="18" width="6" height="15" fill="#fff"/></svg>`,
+                truck: `<svg viewBox="0 0 50 50" class="item-icon"><rect x="5" y="20" width="40" height="20" fill="#cc3333" rx="2"/><circle cx="12" cy="40" r="5" fill="#333"/><circle cx="38" cy="40" r="5" fill="#333"/></svg>`,
+                planet: `<svg viewBox="0 0 50 50" class="item-icon"><circle cx="25" cy="25" r="18" fill="#4169E1"/><ellipse cx="25" cy="25" rx="24" ry="6" fill="none" stroke="#ffd700" stroke-width="2"/></svg>`,
+                blackhole: `<svg viewBox="0 0 50 50" class="item-icon"><circle cx="25" cy="25" r="20" fill="#0a0a0f"/><circle cx="25" cy="25" r="14" fill="#1a0a2a"/><circle cx="25" cy="25" r="8" fill="#2a0a4a"/></svg>`,
+                bigbang: `<svg viewBox="0 0 50 50" class="item-icon"><circle cx="25" cy="25" r="18" fill="#fff"/><circle cx="25" cy="25" r="12" fill="#ffaa00"/><circle cx="25" cy="25" r="6" fill="#ff6600"/></svg>`,
+                boot: `<svg viewBox="0 0 50 50" class="item-icon"><path d="M15 5 L35 5 L37 15 L40 45 L10 45 L13 15 Z" fill="#4a4a5a"/><path d="M10 40 L40 40 L40 48 L10 48 Z" fill="#2a2a3a"/></svg>`
+            };
+            return icons[iconName] || icons.boot;
+        }
+
+        // ============ SHOP ============
+        function renderShop() {
+            shopItems.innerHTML = weapons.map(weapon => {
+                const canAfford = totalHits >= weapon.cost;
+                const isOwned = weapon.owned;
+                const isEquipped = currentWeapon.id === weapon.id;
+                
+                let stateClass = '';
+                if (isEquipped) stateClass = 'equipped';
+                else if (isOwned) stateClass = 'owned';
+                else if (!canAfford) stateClass = 'locked';
+
+                return `
+                    <div class="shop-item ${stateClass}" data-weapon-id="${weapon.id}" role="button" tabindex="0">
+                        <div class="flex items-center gap-3">
+                            ${getWeaponIcon(weapon.icon)}
+                            <div class="flex-1 min-w-0">
+                                <div class="font-display text-base truncate">${weapon.name}</div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span style="color: var(--gold);">x${weapon.multiplier}</span>
+                                    ${!isOwned ? `<span class="text-muted truncate">| ${weapon.cost.toLocaleString()} pts</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                ${isEquipped ? '<span class="text-xs px-2 py-1 rounded" style="background: rgba(0,255,136,0.2); color: #00ff88;">OK</span>' : 
+                                  isOwned ? '<span class="text-xs px-2 py-1 rounded" style="background: rgba(255,215,0,0.2); color: var(--gold);">EQUIPAR</span>' : 
+                                  canAfford ? '<span class="text-xs px-2 py-1 rounded" style="background: rgba(255,61,61,0.2); color: var(--accent);">COMPRAR</span>' : 
+                                  '<span class="text-xs text-muted">BLOQUEADO</span>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.shop-item').forEach(item => {
+                item.addEventListener('click', () => handleShopItemClick(item.dataset.weaponId));
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') handleShopItemClick(item.dataset.weaponId);
+                });
+            });
+        }
+
+        function handleShopItemClick(weaponId) {
+            const weapon = weapons.find(w => w.id === weaponId);
+            if (!weapon || !currentPlayer) return;
+
+            if (weapon.owned) {
+                currentWeapon = weapon;
+                savePlayerData();
+                updateWeaponDisplay();
+                updateCursorIcon();
+                renderShop();
+            } else if (totalHits >= weapon.cost) {
+                totalHits -= weapon.cost;
+                weapon.owned = true;
+                currentWeapon = weapon;
+                savePlayerData();
+                updateHitCounter();
+                updateWeaponDisplay();
+                updateCursorIcon();
+                renderShop();
+                createPurchaseEffect();
+                audioManager.playPurchase();
+            }
+        }
+
+        function createPurchaseEffect() {
+            const effect = document.createElement('div');
+            effect.className = 'multiplier-event';
+            effect.textContent = 'COMPRADO';
+            effect.style.color = '#00ff88';
+            effect.style.textShadow = '0 0 20px #00ff88, 0 0 60px rgba(0,255,136,0.5)';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 1500);
+        }
+
+        // ============ LEADERBOARD ============
+        function renderLeaderboard() {
+            const topPlayers = StorageManager.getTopPlayers(10);
+            
+            if (topPlayers.length === 0) {
+                leaderboardList.innerHTML = '<div class="no-scores">No hay puntuaciones aun</div>';
+                return;
+            }
+
+            leaderboardList.innerHTML = topPlayers.map((player, index) => {
+                const isCurrentPlayer = currentPlayer && player.id === currentPlayer.id;
+                const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : 'normal';
+                
+                return `
+                    <div class="leaderboard-item ${isCurrentPlayer ? 'current-player' : ''}">
+                        <div class="leaderboard-rank ${rankClass}">#${index + 1}</div>
+                        <div class="leaderboard-name">${player.name}</div>
+                        <div class="leaderboard-score">${player.score.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============ GAME LOGIC ============
+        function updateWeaponDisplay() {
+            currentWeaponName.textContent = currentWeapon.name;
+            currentWeaponMultiplier.textContent = `x${currentWeapon.multiplier}`;
+            const effectiveMultiplier = currentWeapon.multiplier * eventMultiplier;
+            multiplierDisplay.textContent = `x${effectiveMultiplier}`;
+        }
+
+        function updateHitCounter() {
+            hitCounter.textContent = totalHits.toLocaleString();
+        }
+
+        function savePlayerData() {
+            if (!currentPlayer) return;
+            
+            const ownedWeapons = weapons.filter(w => w.owned).map(w => w.id);
+            StorageManager.updatePlayerScore(currentPlayer.id, totalHits);
+            StorageManager.updatePlayerWeapons(currentPlayer.id, ownedWeapons, currentWeapon.id);
+        }
+
+        function createHitEffect(x, y, points) {
+            const burst = document.createElement('div');
+            burst.className = 'hit-effect';
+            burst.style.left = x + 'px';
+            burst.style.top = y + 'px';
+            burst.innerHTML = `<svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="35" stroke="#ff3d3d" stroke-width="4" fill="none"/><circle cx="40" cy="40" r="25" stroke="#ffd700" stroke-width="2" fill="none"/></svg>`;
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 500);
+
+            const number = document.createElement('div');
+            number.className = 'hit-number';
+            number.textContent = `+${points}`;
+            number.style.left = x + 'px';
+            number.style.top = y + 'px';
+            document.body.appendChild(number);
+            setTimeout(() => number.remove(), 800);
+        }
+
+        creature.addEventListener('click', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+
+            const effectiveMultiplier = currentWeapon.multiplier * eventMultiplier;
+            totalHits += effectiveMultiplier;
+
+            updateHitCounter();
+            savePlayerData();
+            renderLeaderboard();
+
+            cursor.classList.add('hitting');
+            setTimeout(() => cursor.classList.remove('hitting'), 100);
+
+            creature.classList.add('hit');
+            setTimeout(() => creature.classList.remove('hit'), 150);
+
+            createHitEffect(x, y, effectiveMultiplier);
+
+            document.body.classList.add('screen-shake');
+            setTimeout(() => document.body.classList.remove('screen-shake'), 200);
+
+            audioManager.playHitSound(currentWeapon.id);
+
+            if (Math.random() < 0.05 && eventMultiplier === 1) {
+                triggerRandomEvent();
+            }
+
+            renderShop();
+        });
+
+        function triggerRandomEvent() {
+            const events = [
+                { multiplier: 2, duration: 10 },
+                { multiplier: 3, duration: 8 },
+                { multiplier: 5, duration: 5 }
+            ];
+            
+            const event = events[Math.floor(Math.random() * events.length)];
+            eventMultiplier = event.multiplier;
+            
+            eventBanner.textContent = `x${event.multiplier} ACTIVO - ${event.duration} SEGUNDOS`;
+            eventBanner.style.display = 'block';
+
+            const popup = document.createElement('div');
+            popup.className = 'multiplier-event';
+            popup.textContent = `x${event.multiplier}`;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 1500);
+
+            audioManager.playEvent();
+            updateWeaponDisplay();
+
+            let remaining = event.duration;
+            const countdown = setInterval(() => {
+                remaining--;
+                eventBanner.textContent = `x${event.multiplier} ACTIVO - ${remaining} SEGUNDOS`;
+                
+                if (remaining <= 0) {
+                    clearInterval(countdown);
+                    eventMultiplier = 1;
+                    eventBanner.style.display = 'none';
+                    updateWeaponDisplay();
+                }
+            }, 1000);
+        }
+
+        // ============ TOGGLES ============
+        let shopOpen = true;
+        let leaderboardOpen = false;
+
+        function toggleShop() {
+            shopOpen = !shopOpen;
+            shopPanel.classList.toggle('hidden', !shopOpen);
+            shopToggle.classList.toggle('active', shopOpen);
+        }
+
+        function toggleLeaderboard() {
+            leaderboardOpen = !leaderboardOpen;
+            leaderboardPanel.classList.toggle('hidden', !leaderboardOpen);
+            leaderboardToggle.classList.toggle('active', leaderboardOpen);
+            if (leaderboardOpen) renderLeaderboard();
+        }
+
+        shopToggle.addEventListener('click', toggleShop);
+        leaderboardToggle.addEventListener('click', toggleLeaderboard);
+
+        musicToggle.addEventListener('click', () => {
+            audioManager.init();
+            const muted = audioManager.toggleMusic();
+            musicToggle.classList.toggle('muted', muted);
+        });
+
+        sfxToggle.addEventListener('click', () => {
+            const muted = audioManager.toggleSFX();
+            sfxToggle.classList.toggle('muted', muted);
+        });
+
+        targetArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            creature.dispatchEvent(new MouseEvent('click', { clientX: touch.clientX, clientY: touch.clientY }));
+        });
+
+        // ============ INIT ============
+        function init() {
+            createParticles();
+            usernameInput.focus();
+        }
+
+        init();
+    </script>
+
+    <!-- Ads horizontal at bottom -->
+    <div class="w-full flex justify-center my-4">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-7539874541236460"
+             data-ad-slot="4958599311"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+</body>
+</html>
